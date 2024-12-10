@@ -135,9 +135,6 @@ elif [ "$option" == "2" ]; then
         sudo kuzco worker stop
         kuzco upgrade
 
-        # 실행 권한 부여
-        chmod +x setup-kuzco.sh
-
         # 워커 정보 입력 받기
         read -p "워커 이름을 입력하세요: " worker_name
         read -p "워커 Instance ID를 입력하세요: " worker_code
