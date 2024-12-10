@@ -9,7 +9,7 @@ NC='\033[0m' # 색상 초기화
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
 echo -e "${GREEN}1: kuzco 노드 새로 설치${NC}"
 echo -e "${GREEN}2: kuzco 노드 업데이트 및 재실행${NC}"
-echo -e "${GREEN}3: 방화벽 포트 자동 개방 (메인PC는 실행X)${NC}"
+echo -e "${GREEN}3: 방화벽 포트 자동 개방 (메인PC는 절대 실행하지 마세요)${NC}"
 
 read -p "선택 (1, 2): " option
 
