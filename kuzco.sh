@@ -9,6 +9,8 @@ NC='\033[0m' # 색상 초기화
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
 echo -e "${GREEN}1: kuzco 노드 새로 설치${NC}"
 echo -e "${GREEN}2: kuzco 노드 업데이트 및 재실행${NC}"
+echo -e "${GREEN}3: 방화벽 포트 자동 개방 (메인PC는 실행X)${NC}"
+
 read -p "선택 (1, 2): " option
 
 if [ "$option" == "1" ]; then
@@ -147,6 +149,38 @@ elif [ "$option" == "2" ]; then
         # kuzco worker 실행
         echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"
         sudo kuzco worker start --background --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"    
+        
+elif [ "$option" == "3" ]; then
+    echo -e "${RED}경고: 이 옵션은 서버에서만 실행해야 합니다!${NC}"
+    echo -e "${RED}개인 PC에서 실행 시 보안에 위험할 수 있습니다!${NC}"
+    read -p "정말로 계속하시겠습니까? (y/n): " confirm
+    
+    if [ "$confirm" == "y" ]; then
+        # 현재 사용 중인 포트 확인 및 허용
+        echo -e "${GREEN}현재 사용 중인 포트를 확인합니다...${NC}"
+
+        # TCP 포트 확인 및 허용
+        echo -e "${YELLOW}TCP 포트 확인 및 허용 중...${NC}"
+        sudo ss -tlpn | grep LISTEN | awk '{print $4}' | cut -d':' -f2 | while read port; do
+            echo -e "TCP 포트 ${GREEN}$port${NC} 허용"
+            sudo ufw allow $port/tcp
+        done
+
+        # UDP 포트 확인 및 허용
+        echo -e "${YELLOW}UDP 포트 확인 및 허용 중...${NC}"
+        sudo ss -ulpn | grep LISTEN | awk '{print $4}' | cut -d':' -f2 | while read port; do
+            echo -e "UDP 포트 ${GREEN}$port${NC} 허용"
+            sudo ufw allow $port/udp
+        done
+        
+        echo -e "${GREEN}포트 개방이 완료되었습니다.${NC}"
+    else
+        echo "작업이 취소되었습니다."
+    fi
+else
+    echo "잘못된 선택입니다."
+    exit 1
+fi
 
 else
     echo "잘못된 선택입니다."
