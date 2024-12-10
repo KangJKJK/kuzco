@@ -103,8 +103,8 @@ if [ "$option" == "1" ]; then
         read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
         
         # 작업공간생성 및 이동
-        mkdir -p "/kuzco"
-        cd "~/kuzco"
+        mkdir -p "$HOME/kuzco"
+        cd "$HOME/kuzco"
         echo -e "${GREEN}작업 디렉토리 이동${NC}"
     
         # 스크립트를 파일로 저장
@@ -119,7 +119,7 @@ if [ "$option" == "1" ]; then
 elif [ "$option" == "2" ]; then
     echo "업데이트 및 재실행을 선택하셨습니다."
 
-        cd "~/kuzco"
+        cd "$HOME/kuzco"
         echo -e "${GREEN}작업 디렉토리 이동${NC}"
     
         # 사용자 안내
