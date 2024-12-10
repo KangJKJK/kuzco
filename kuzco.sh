@@ -98,22 +98,6 @@ if [ "$option" == "1" ]; then
     
         # 사용자 입력 받기
         read -p "GPU 종류를 선택하세요 (1: NVIDIA, 2: AMD): " gpu_choice
-        read -p "kuzco 지갑 주소를 입력하세요: " wallet_address
-        read -p "채굴자 이름을 입력하세요: " miner_name
-    
-        # GPU 선택에 따른 다운로드 및 설치
-        if [ "$gpu_choice" == "1" ]; then
-            echo "NVIDIA GPU 마이너를 다운로드합니다..."
-            wget https://github.com/6block/zkwork_moz_prover/releases/download/v1.0.2/moz_prover-v1.0.2_cuda.tar.gz
-            tar -zvxf moz_prover-v1.0.2_cuda.tar.gz
-        elif [ "$gpu_choice" == "2" ]; then
-            echo "AMD GPU 마이너를 다운로드합니다..."
-            wget https://github.com/6block/zkwork_moz_prover/releases/download/v1.0.2/moz_prover-v1.0.2_ocl.tar.gz
-            tar -zvxf moz_prover-v1.0.2_ocl.tar.gz
-        else
-            echo "잘못된 선택입니다."
-            exit 1
-        fi
 
         # 작업공간생성 및 이동
         mkdir -p "./kuzco"
