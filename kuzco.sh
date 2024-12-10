@@ -8,7 +8,7 @@ NC='\033[0m' # 색상 초기화
 # 초기 선택 메뉴
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
 echo -e "${GREEN}1: kuzco 노드 새로 설치${NC}"
-echo -e "${GREEN}2: 방화벽 허용${NC}"
+echo -e "${GREEN}2: kuzco 노드 재실행${NC}"
 read -p "선택 (1, 2): " option
 
 if [ "$option" == "1" ]; then
@@ -96,15 +96,18 @@ if [ "$option" == "1" ]; then
         echo "wsl --update"
         read -p "윈도우라면 파워셸을 관리자권한으로 열어서 위 명령어들을 입력하세요"
     
-        # 사용자 입력 받기
-        read -p "GPU 종류를 선택하세요 (1: NVIDIA, 2: AMD): " gpu_choice
-
+        # 사용자 안내
+        echo -e "${YELLOW}https://kuzco.xyz/ 로 이동하시고 회원가입을 진행해주세요.${NC}"
+        echo -e "${YELLOW}Workers 탭에 이동하신 후 Create worker를 클릭해 주세요.${NC}"
+        echo -e "${YELLOW}CLI를 선택하신 후 워커네임을 지정해주세요.${NC}"
+        read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
+        
         # 작업공간생성 및 이동
         mkdir -p "./kuzco"
         cd "./kuzco"
         echo -e "${GREEN}작업 디렉토리 이동${NC}"
     
-        # 스크립트 다운로드 및 실행
+        # 스크립트 다운로드
         sh -c "$(curl -sSL https://kuzco.xyz/setup-kuzco.sh)"
 
         # 실행 권한 부여
@@ -114,65 +117,25 @@ if [ "$option" == "1" ]; then
         ./setup-kuzco.sh       
 
 elif [ "$option" == "2" ]; then
-    echo "방화벽 허용을 선택했습니다."
+    echo "재실행을 선택하셨습니다."
 
-        # UFW 활성화 (아직 활성화되지 않은 경우)
-        sudo ufw enable
-        
-        # 현재 사용 중인 포트 확인 및 허용
-        echo -e "${GREEN}현재 사용 중인 포트를 확인합니다...${NC}"
-
-        # TCP 포트 확인 및 허용
-        echo -e "${YELLOW}TCP 포트 확인 및 허용 중...${NC}"
-        sudo ss -tlpn | grep LISTEN | awk '{print $4}' | cut -d':' -f2 | while read port; do
-            echo -e "TCP 포트 ${GREEN}$port${NC} 허용"
-            sudo ufw allow $port/tcp
-        done
-
-        # UDP 포트 확인 및 허용
-        echo -e "${YELLOW}UDP 포트 확인 및 허용 중...${NC}"
-        sudo ss -ulpn | grep LISTEN | awk '{print $4}' | cut -d':' -f2 | while read port; do
-            echo -e "UDP 포트 ${GREEN}$port${NC} 허용"
-            sudo ufw allow $port/udp
-        done
-
-elif [ "$option" == "3" ]; then
-    echo "Lumoz 노드 삭제를 선택했습니다."
-
-    # 작업 디렉토리 삭제
-    if [ -d "./kuzco" ]; then
-        rm -rf "./kuzco"
-        echo "Lumoz 마이너 디렉토리가 삭제되었습니다."
-    fi
+        cd "./kuzco"
+        echo -e "${GREEN}작업 디렉토리 이동${NC}"
     
-    # 1. 먼저 실행 중인 모든 관련 프로세스 확인
-    ps aux | grep "[m]oz_prover"
+        # 사용자 안내
+        echo -e "${YELLOW}https://kuzco.xyz/ 로에서 Workers 탭으로 이동하세요.${NC}"
+        echo -e "${YELLOW}기존에 실행중이였던 Worker의 이름을 기억해주세요. 기억이나지않는다면 새로 생성하세요.${NC}"
+        echo -e "${YELLOW}CLI를 선택하신 후 워커네임을 지정해주세요.${NC}"
+        read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
 
-    # 2. sudo를 사용하여 프로세스 종료
-    sudo kill $(pgrep moz_prover)
-    sudo kill $(pgrep run_prover)
+        # 스크립트 다운로드
+        sh -c "$(curl -sSL https://kuzco.xyz/setup-kuzco.sh)"
 
-    # 3. 여전히 실행 중이라면 강제 종료
-    sudo pkill -f "moz_prover"
-    sudo pkill -f "run_prover.sh"
-    sudo pkill -9 moz_prover
-    
-    # 실제 moz_prover 프로세스 찾기 및 종료
-    moz_pid=$(ps aux | grep "[m]oz_prover" | awk '{print $2}')
-    if [ ! -z "$moz_pid" ]; then
-        echo "moz_prover 프로세스(PID: $moz_pid)를 종료합니다..."
-        sudo kill $moz_pid
-        sleep 2
-        
-        # 프로세스가 여전히 실행 중이면 강제 종료
-        if ps -p $moz_pid > /dev/null; then
-            echo "프로세스를 강제 종료합니다..."
-            sudo kill -9 $moz_pid
-        fi
-        echo "프로세스가 종료되었습니다."
-    else
-        echo "실행 중인 moz_prover 프로세스를 찾을 수 없습니다."
-    fi
+        # 실행 권한 부여
+        chmod +x setup-kuzco.sh
+
+        # 스크립트 실행
+        ./setup-kuzco.sh       
 
 else
     echo "잘못된 선택입니다."
