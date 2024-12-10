@@ -14,7 +14,7 @@ echo -e "${GREEN}3: 방화벽 포트 자동 개방 (메인PC는 실행X)${NC}"
 read -p "선택 (1, 2): " option
 
 if [ "$option" == "1" ]; then
-    echo "Lumoz 노드 새로 설치를 선택했습니다."
+    echo "kuzco 노드 새로 설치를 선택했습니다."
     
     echo -e "${YELLOW}NVIDIA 드라이버 설치 옵션을 선택하세요:${NC}"
     echo -e "1: 일반 그래픽카드 (RTX, GTX 시리즈) 드라이버 설치"
