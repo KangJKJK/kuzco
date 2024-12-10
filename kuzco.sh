@@ -119,22 +119,34 @@ if [ "$option" == "1" ]; then
 elif [ "$option" == "2" ]; then
     echo "업데이트 및 재실행을 선택하셨습니다."
 
-        cd "./kuzco"
+        cd "~/kuzco"
         echo -e "${GREEN}작업 디렉토리 이동${NC}"
     
         # 사용자 안내
         echo -e "${YELLOW}https://kuzco.xyz/ 로에서 Workers 탭으로 이동하세요.${NC}"
         echo -e "${YELLOW}기존에 실행중이였던 Worker의 이름을 기억해주세요. 기억이나지않는다면 새로 생성하세요.${NC}"
         echo -e "${YELLOW}CLI를 선택하신 후 워커네임을 지정해주세요.${NC}"
+        echo -e "${RED}워커 네임과 코드를 반드시 기억해주세요.${NC}"
         read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
 
+        # 노드 중지 및 업그레이드
+        sudo kuzco worker stop
         kuzco upgrade
 
         # 실행 권한 부여
         chmod +x setup-kuzco.sh
 
-        # 스크립트 실행
-        ./setup-kuzco.sh       
+        # 워커 정보 입력 받기
+        read -p "워커 이름을 입력하세요: " worker_name
+        read -p "워커 코드를 입력하세요: " worker_code
+        
+        # 환경변수로 설정
+        export KUZCO_WORKER_NAME="$worker_name"
+        export KUZCO_WORKER_CODE="$worker_code"
+        
+        # kuzco worker 실행
+        echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"
+        sudo kuzco worker start --background --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"    
 
 else
     echo "잘못된 선택입니다."
