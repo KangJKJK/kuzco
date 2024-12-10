@@ -140,7 +140,7 @@ elif [ "$option" == "2" ]; then
 
         # 워커 정보 입력 받기
         read -p "워커 이름을 입력하세요: " worker_name
-        read -p "워커 코드를 입력하세요: " worker_code
+        read -p "워커 Instance ID를 입력하세요: " worker_code
         
         # 환경변수로 설정
         export KUZCO_WORKER_NAME="$worker_name"
