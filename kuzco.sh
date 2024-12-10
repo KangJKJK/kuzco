@@ -103,21 +103,21 @@ if [ "$option" == "1" ]; then
         read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
         
         # 작업공간생성 및 이동
-        mkdir -p "./kuzco"
-        cd "./kuzco"
+        mkdir -p "/kuzco"
+        cd "~/kuzco"
         echo -e "${GREEN}작업 디렉토리 이동${NC}"
     
-        # 스크립트 다운로드
-        sh -c "$(curl -sSL https://kuzco.xyz/setup-kuzco.sh)"
-
+        # 스크립트를 파일로 저장
+        curl -sSL https://kuzco.xyz/setup-kuzco.sh > setup-kuzco.sh
+        
         # 실행 권한 부여
         chmod +x setup-kuzco.sh
-
-        # 스크립트 실행
-        ./setup-kuzco.sh       
+        
+        # 저장된 스크립트 실행
+        ./setup-kuzco.sh    
 
 elif [ "$option" == "2" ]; then
-    echo "재실행을 선택하셨습니다."
+    echo "업데이트 및 재실행을 선택하셨습니다."
 
         cd "./kuzco"
         echo -e "${GREEN}작업 디렉토리 이동${NC}"
@@ -127,6 +127,8 @@ elif [ "$option" == "2" ]; then
         echo -e "${YELLOW}기존에 실행중이였던 Worker의 이름을 기억해주세요. 기억이나지않는다면 새로 생성하세요.${NC}"
         echo -e "${YELLOW}CLI를 선택하신 후 워커네임을 지정해주세요.${NC}"
         read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
+
+        kuzco upgrade
 
         # 실행 권한 부여
         chmod +x setup-kuzco.sh
