@@ -128,9 +128,6 @@ elif [ "$option" == "2" ]; then
         echo -e "${YELLOW}CLI를 선택하신 후 워커네임을 지정해주세요.${NC}"
         read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
 
-        # 스크립트 다운로드
-        sh -c "$(curl -sSL https://kuzco.xyz/setup-kuzco.sh)"
-
         # 실행 권한 부여
         chmod +x setup-kuzco.sh
 
