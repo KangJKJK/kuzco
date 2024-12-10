@@ -181,8 +181,3 @@ else
     echo "잘못된 선택입니다."
     exit 1
 fi
-
-else
-    echo "잘못된 선택입니다."
-    exit 1
-fi
