@@ -150,6 +150,7 @@ elif [ "$option" == "2" ]; then
 elif [ "$option" == "3" ]; then
     echo -e "${RED}경고: 이 옵션은 서버에서만 실행해야 합니다!${NC}"
     echo -e "${RED}개인 PC에서 실행 시 보안에 위험할 수 있습니다!${NC}"
+    echo -e "${RED}이용 중인 모든 포트에 대한 방화벽이 허용됩니다. 가상 서버가 아니라면 보안에 취약하므로 주의해야 합니다.${NC}"
     read -p "정말로 계속하시겠습니까? (y/n): " confirm
     
     if [ "$confirm" == "y" ]; then
