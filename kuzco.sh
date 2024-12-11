@@ -259,6 +259,8 @@ elif [ "$option" == "3" ]; then
     echo -e "${YELLOW}Create woker를 누르신후 docker를 선택해주세요.${NC}"
     echo -e "${YELLOW}instance탭으로 가셔서 Launch worker를 클릭하세요.${NC}"
     echo -e "${YELLOW}workerID와 instanceID가 필요하니 기억해두세요.${NC}"
+    echo -e "${YELLOW}예를들어 이런 형식이라면 --worker abc--a1 --code abc51-520-231${NC}"
+    echo -e "${YELLOW}워커ID=abc--a1 InstanceID=abc51-520-231 입니다.${NC}"
     read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
 
     # 워커 정보 입력 받기
