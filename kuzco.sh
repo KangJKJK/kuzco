@@ -262,12 +262,21 @@ elif [ "$option" == "3" ]; then
     echo -e "${YELLOW}Docker 서비스를 재시작합니다. 기존 컨테이너들을 다시 시작할 예정입니다...${NC}"
     sudo systemctl restart docker
     
-    # 이전에 실행 중이던 컨테이너들 재시작
-    echo -e "${GREEN}기존 컨테이너들을 재시작합니다...${NC}"
-    echo "$running_containers" | while IFS=: read -r name id; do
-        if [ ! -z "$name" ]; then
-            echo "컨테이너 재시작: $name"
-            docker start "$id"
+    # Kuzco 워커 컨테이너들 재시작
+    echo -e "${GREEN}Kuzco 워커들을 재시작합니다...${NC}"
+    echo "$running_containers" | while IFS=: read -r name image command; do
+        if [ ! -z "$name" ] && [[ "$image" == "kuzcoxyz/worker"* ]]; then
+            echo "Kuzco 워커 재시작: $name"
+            # 컨테이너 설정에서 worker와 code 추출
+            worker_info=$(docker inspect "$name" 2>/dev/null | grep -A1 "\"--worker\"" || true)
+            if [ ! -z "$worker_info" ]; then
+                worker_name=$(echo "$worker_info" | grep "\"--worker\"" -A1 | tail -n1 | tr -d ' ",' | tr -d '\n')
+                worker_code=$(echo "$worker_info" | grep "\"--code\"" -A1 | tail -n1 | tr -d ' ",' | tr -d '\n')
+                
+                echo "워커 재시작: $worker_name"
+                docker run --rm --runtime=nvidia --gpus all -d --name "kuzco-worker-$(date +%s)" \
+                    kuzcoxyz/worker:latest --worker "$worker_name" --code "$worker_code"
+            fi
         fi
     done
 
