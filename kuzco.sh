@@ -265,7 +265,6 @@ elif [ "$option" == "3" ]; then
         
         echo -e "${YELLOW}Docker 서비스를 재시작합니다. 기존 컨테이너들이 삭제됩니다.${NC}"
         sudo systemctl restart docker
-        done
     fi
 
     # Docker 런타임 설정 확인
