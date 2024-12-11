@@ -127,9 +127,9 @@ elif [ "$option" == "2" ]; then
     
         # 사용자 안내
         echo -e "${YELLOW}https://kuzco.xyz/ 로에서 Workers 탭으로 이동하세요.${NC}"
-        echo -e "${YELLOW}기존에 실행중이였던 Worker의 이름을 기억해주세요. 기억이나지않는다면 새로 생성하세요.${NC}"
-        echo -e "${YELLOW}CLI를 선택하신 후 워커네임을 지정해주세요.${NC}"
-        echo -e "${RED}워커 네임과 코드를 반드시 기억해주세요.${NC}"
+        echo -e "${YELLOW}재구동하고자 하는 워커를 클릭해주세요.${NC}"
+        echo -e "${YELLOW}instance탭으로 가셔서 Launch worker를 클릭하시거나 정보를 확인하세요.${NC}"
+        echo -e "${YELLOW}workerID와 instance code가 필요합니다.${NC}"
         read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
 
         # 노드 중지 및 업그레이드
