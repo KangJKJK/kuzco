@@ -242,43 +242,31 @@ elif [ "$option" == "3" ]; then
         newgrp docker
     fi
 
-    # NVIDIA Container Toolkit 설치
-    echo -e "${BLUE}NVIDIA Container Toolkit을 설치합니다...${NC}"
-    
-    # 현재 실행 중인 컨테이너 목록 저장
-    echo -e "${YELLOW}현재 실행 중인 컨테이너 정보를 저장합니다...${NC}"
-    running_containers=$(docker ps --format '{{.Names}}:{{.ID}}')
-    
-    curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+    # NVIDIA Container Toolkit 설치 여부 확인
+    if nvidia-ctk --version &> /dev/null && docker info | grep -i "nvidia" &> /dev/null; then
+        echo -e "${GREEN}NVIDIA Container Toolkit이 이미 설치되어 있습니다.${NC}"
+        echo -e "${GREEN}설치 단계를 건너뜁니다...${NC}"
+    else
+        echo -e "${BLUE}NVIDIA Container Toolkit을 설치합니다...${NC}"
+        
+        # 현재 실행 중인 컨테이너 목록 저장
+        echo -e "${YELLOW}현재 실행 중인 컨테이너 정보를 저장합니다...${NC}"
+        running_containers=$(docker ps --format '{{.Names}}:{{.ID}}')
+        
+        curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
 
-    curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
-    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
-    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+        curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+        sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+        sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
-    sudo apt-get update
-    sudo apt-get install -y nvidia-container-toolkit nvidia-container-runtime
-    sudo nvidia-ctk runtime configure --runtime=docker
-    
-    echo -e "${YELLOW}Docker 서비스를 재시작합니다. 기존 컨테이너들을 다시 시작할 예정입니다...${NC}"
-    sudo systemctl restart docker
-    
-    # Kuzco 워커 컨테이너들 재시작
-    echo -e "${GREEN}Kuzco 워커들을 재시작합니다...${NC}"
-    echo "$running_containers" | while IFS=: read -r name image command; do
-        if [ ! -z "$name" ] && [[ "$image" == "kuzcoxyz/worker"* ]]; then
-            echo "Kuzco 워커 재시작: $name"
-            # 컨테이너 설정에서 worker와 code 추출
-            worker_info=$(docker inspect "$name" 2>/dev/null | grep -A1 "\"--worker\"" || true)
-            if [ ! -z "$worker_info" ]; then
-                worker_name=$(echo "$worker_info" | grep "\"--worker\"" -A1 | tail -n1 | tr -d ' ",' | tr -d '\n')
-                worker_code=$(echo "$worker_info" | grep "\"--code\"" -A1 | tail -n1 | tr -d ' ",' | tr -d '\n')
-                
-                echo "워커 재시작: $worker_name"
-                docker run --rm --runtime=nvidia --gpus all -d --name "kuzco-worker-$(date +%s)" \
-                    kuzcoxyz/worker:latest --worker "$worker_name" --code "$worker_code"
-            fi
-        fi
-    done
+        sudo apt-get update
+        sudo apt-get install -y nvidia-container-toolkit nvidia-container-runtime
+        sudo nvidia-ctk runtime configure --runtime=docker
+        
+        echo -e "${YELLOW}Docker 서비스를 재시작합니다. 기존 컨테이너들이 삭제됩니다.${NC}"
+        sudo systemctl restart docker
+        done
+    fi
 
     # Docker 런타임 설정 확인
     echo -e "${GREEN}Docker 런타임 설정을 확인합니다...${NC}"
@@ -292,8 +280,6 @@ elif [ "$option" == "3" ]; then
     echo -e "${YELLOW}Create woker를 누르신후 docker를 선택해주세요.${NC}"
     echo -e "${YELLOW}instance탭으로 가셔서 Launch worker를 클릭하세요.${NC}"
     echo -e "${YELLOW}workerID와 instanceID가 필요하니 기억해두세요.${NC}"
-    echo -e "${YELLOW}예를들어 이런 형식이라면 --worker abc--a1 --code abc51-520-231${NC}"
-    echo -e "${YELLOW}워커ID=abc--a1 InstanceID=abc51-520-231 입니다.${NC}"
     read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
 
     # 워커 정보 입력 받기
@@ -311,4 +297,5 @@ else
     echo "잘못된 선택입니다."
     exit 1
 fi
+
 
