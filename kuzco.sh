@@ -7,12 +7,13 @@ NC='\033[0m' # 색상 초기화
 
 # 초기 선택 메뉴
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
-echo -e "${GREEN}1: kuzco 노드 새로 설치${NC}"
+echo -e "${GREEN}1: kuzco 노드 새로 설치(CLI)${NC}"
 echo -e "${GREEN}2: kuzco 노드 업데이트 및 재실행${NC}"
 echo -e "${GREEN}3: 방화벽 포트 자동 개방 (자산이 있는 개인지갑이 설치된 PC는 절대 실행하지 마세요)${NC}"
+echo -e "${GREEN}4: kuzco 노드 중복 설치(Docker)${NC}"
 echo -e "${RED}노드 구동 후 대시보드 연동까지 최소 5분~10분정도 소요됩니다. 충분히 기다리세요!${NC}"
 
-read -p "선택 (1, 2): " option
+read -p "선택 (1, 2, 3, 4): " option
 
 if [ "$option" == "1" ]; then
     echo "kuzco 노드 새로 설치를 선택했습니다."
@@ -177,6 +178,91 @@ elif [ "$option" == "3" ]; then
     else
         echo "작업이 취소되었습니다."
     fi
+
+    elif [ "$option" == "4" ]; then
+    echo -e "${GREEN}Kuzco노드 중복설치를 시작합니다. CLI설치를 우선 하시고 이 옵션을 선택하세요.${NC}"
+    read -p "정말로 계속하시겠습니까? (y/n): " confirm
+    
+    # Docker 설치 확인
+    echo -e "${BLUE}Docker 설치/업데이트를 확인합니다...${NC}"
+    
+    # 기존 Docker 설치 확인 및 업데이트
+    if dpkg -l | grep -q docker-ce; then
+        echo -e "${GREEN}기존 Docker CE가 설치되어 있습니다. 업데이트를 진행합니다...${NC}"
+        sudo apt update
+        sudo apt upgrade -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin
+    else
+        # Docker가 설치되어 있지 않은 경우, 새로 설치 진행
+        if [ ! -f /etc/apt/keyrings/docker.gpg ]; then
+            # 필요한 패키지 설치
+            sudo apt update
+            sudo apt install -y ca-certificates curl gnupg lsb-release
+            
+            # Docker 공식 GPG key 추가
+            sudo mkdir -p /etc/apt/keyrings
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+            
+            # Docker 리포지토리 설정
+            echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+        fi
+        
+        # 패키지 업데이트 및 Docker 설치
+        sudo apt update
+        sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin
+    fi
+    
+    # Docker 버전 확인
+    echo -e "${GREEN}현재 Docker 버전:${NC}"
+    docker --version
+    
+    # Docker Compose 설치
+    echo -e "${BLUE}Docker Compose 최신 버전을 설치합니다...${NC}"
+    
+    # GitHub API에서 최신 버전 확인
+    LATEST_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+    echo -e "${GREEN}최신 버전: ${LATEST_VERSION}${NC}"
+    
+    # Docker Compose 설치
+    mkdir -p $HOME/.docker/cli-plugins
+    curl -SL "https://github.com/docker/compose/releases/download/${LATEST_VERSION}/docker-compose-linux-x86_64" -o $HOME/.docker/cli-plugins/docker-compose
+    chmod +x $HOME/.docker/cli-plugins/docker-compose
+    
+    # 버전 확인
+    echo -e "${GREEN}설치된 Docker Compose 버전:${NC}"
+    docker compose version
+    
+    # Docker 서비스 시작 및 자동 시작 설정
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    
+    # 현재 사용자를 docker 그룹에 추가
+    if ! groups $USER | grep &>/dev/null '\bdocker\b'; then
+        echo -e "${BLUE}사용자를 docker 그룹에 추가합니다...${NC}"
+        sudo usermod -aG docker $USER
+        newgrp docker
+    fi
+
+    # Kuzco Docker 설치
+    docker pull kuzcoxyz/worker:latest
+
+    # 이용자에게 정보 받기
+    echo -e "${YELLOW}https://kuzco.xyz/ 로에서 Workers 탭으로 이동하세요.${NC}"
+    echo -e "${YELLOW}Create woker를 누르신후 docker를 선택해주세요.${NC}"
+    echo -e "${YELLOW}instance탭으로 가셔서 Launch worker를 클릭하세요.${NC}"
+    echo -e "${YELLOW}workerID와 instanceID가 필요하니 기억해두세요.${NC}"
+    read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
+
+    # 워커 정보 입력 받기
+    read -p "워커 ID를 입력하세요: " worker_name
+    read -p "워커 Instance ID를 입력하세요: " worker_code
+    
+    # 환경변수로 설정
+    export KUZCO_WORKER_NAME="$worker_name"
+    export KUZCO_WORKER_CODE="$worker_code"
+    
+    # kuzco worker 실행
+    echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"          
+    docker run --rm --runtime=nvidia --gpus all -d kuzcoxyz/worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE" 
 else
     echo "잘못된 선택입니다."
     exit 1
