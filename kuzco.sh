@@ -249,7 +249,7 @@ elif [ "$option" == "3" ]; then
     curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
     sudo apt-get update
     sudo apt-get install -y nvidia-container-toolkit
-    sudo systemctl restart docker
+    sudo nvidia-ctk runtime configure --runtime=docker
 
     # Kuzco Docker 설치
     docker pull kuzcoxyz/worker:latest
