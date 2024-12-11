@@ -242,6 +242,15 @@ elif [ "$option" == "3" ]; then
         newgrp docker
     fi
 
+    # NVIDIA Container Toolkit 설치
+    echo -e "${BLUE}NVIDIA Container Toolkit을 설치합니다...${NC}"
+    distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+    curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+    curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+    sudo apt-get update
+    sudo apt-get install -y nvidia-container-toolkit
+    sudo systemctl restart docker
+
     # Kuzco Docker 설치
     docker pull kuzcoxyz/worker:latest
 
@@ -262,8 +271,9 @@ elif [ "$option" == "3" ]; then
     
     # kuzco worker 실행
     echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"          
-    docker run --rm --runtime=nvidia --gpus all -d kuzcoxyz/worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE" 
+    docker run --rm --runtime=nvidia --gpus all -d --name kuzco-worker-$(date +%s) kuzcoxyz/worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
 else
     echo "잘못된 선택입니다."
     exit 1
 fi
+
