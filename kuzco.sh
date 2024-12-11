@@ -11,9 +11,10 @@ echo -e "${GREEN}1: kuzco 노드 새로 설치(CLI)${NC}"
 echo -e "${GREEN}2: kuzco 노드 업데이트 및 재실행(CLI)${NC}"
 echo -e "${GREEN}3: 방화벽 포트 자동 개방 (자산이 있는 개인지갑이 설치된 PC는 절대 실행하지 마세요)${NC}"
 echo -e "${GREEN}4: kuzco 노드 중복 설치(Docker)${NC}"
+echo -e "${GREEN}5: kuzco Docker 컨테이너 삭제${NC}"
 echo -e "${RED}노드 구동 후 대시보드 연동까지 최소 5분~10분정도 소요됩니다. 충분히 기다리세요!${NC}"
 
-read -p "선택 (1, 2, 3, 4): " option
+read -p "선택 (1, 2, 3, 4, 5): " option
 
 if [ "$option" == "1" ]; then
     echo "kuzco 노드 새로 설치를 선택했습니다."
@@ -292,6 +293,29 @@ elif [ "$option" == "3" ]; then
     # kuzco worker 실행
     echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"          
     docker run --rm --runtime=nvidia --gpus all -d --name kuzco-worker-$(date +%s) kuzcoxyz/worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
+
+elif [ "$option" == "5" ]; then
+    echo -e "${YELLOW}실행 중인 모든 Kuzco Docker 컨테이너를 확인합니다...${NC}"
+    
+    # kuzco-worker 관련 컨테이너 목록 조회
+    containers=$(docker ps -a --filter "name=kuzco-worker" --format "table {{.ID}}\t{{.Image}}\t{{.Status}}\t{{.Names}}")
+    
+    if [ -z "$containers" ]; then
+        echo -e "${RED}실행 중인 Kuzco 컨테이너가 없습니다.${NC}"
+    else
+        echo -e "${GREEN}발견된 Kuzco 컨테이너 목록:${NC}"
+        echo "$containers"
+        
+        read -p "모든 Kuzco 컨테이너를 삭제하시겠습니까? (y/n): " confirm
+        if [ "$confirm" == "y" ]; then
+            echo -e "${YELLOW}컨테이너를 중지하고 삭제합니다...${NC}"
+            docker ps -a --filter "name=kuzco-worker" -q | xargs -r docker stop
+            docker ps -a --filter "name=kuzco-worker" -q | xargs -r docker rm
+            echo -e "${GREEN}모든 Kuzco 컨테이너가 성공적으로 삭제되었습니다.${NC}"
+        else
+            echo "작업이 취소되었습니다."
+        fi
+    fi
 else
     echo "잘못된 선택입니다."
     exit 1
