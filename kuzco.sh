@@ -244,6 +244,11 @@ elif [ "$option" == "3" ]; then
 
     # NVIDIA Container Toolkit 설치
     echo -e "${BLUE}NVIDIA Container Toolkit을 설치합니다...${NC}"
+    
+    # 현재 실행 중인 컨테이너 목록 저장
+    echo -e "${YELLOW}현재 실행 중인 컨테이너 정보를 저장합니다...${NC}"
+    running_containers=$(docker ps --format '{{.Names}}:{{.ID}}')
+    
     curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
 
     curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
@@ -253,6 +258,18 @@ elif [ "$option" == "3" ]; then
     sudo apt-get update
     sudo apt-get install -y nvidia-container-toolkit nvidia-container-runtime
     sudo nvidia-ctk runtime configure --runtime=docker
+    
+    echo -e "${YELLOW}Docker 서비스를 재시작합니다. 기존 컨테이너들을 다시 시작할 예정입니다...${NC}"
+    sudo systemctl restart docker
+    
+    # 이전에 실행 중이던 컨테이너들 재시작
+    echo -e "${GREEN}기존 컨테이너들을 재시작합니다...${NC}"
+    echo "$running_containers" | while IFS=: read -r name id; do
+        if [ ! -z "$name" ]; then
+            echo "컨테이너 재시작: $name"
+            docker start "$id"
+        fi
+    done
 
     # Docker 런타임 설정 확인
     echo -e "${GREEN}Docker 런타임 설정을 확인합니다...${NC}"
