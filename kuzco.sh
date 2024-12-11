@@ -244,12 +244,19 @@ elif [ "$option" == "3" ]; then
 
     # NVIDIA Container Toolkit 설치
     echo -e "${BLUE}NVIDIA Container Toolkit을 설치합니다...${NC}"
-    distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-    curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
-    curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+    curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+
+    curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
+
     sudo apt-get update
-    sudo apt-get install -y nvidia-container-toolkit
+    sudo apt-get install -y nvidia-container-toolkit nvidia-container-runtime
     sudo nvidia-ctk runtime configure --runtime=docker
+
+    # Docker 런타임 설정 확인
+    echo -e "${GREEN}Docker 런타임 설정을 확인합니다...${NC}"
+    docker info | grep -i runtime
 
     # Kuzco Docker 설치
     docker pull kuzcoxyz/worker:latest
