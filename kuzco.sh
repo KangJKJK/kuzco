@@ -225,32 +225,32 @@ elif [ "$option" == "3" ]; then
     
     # rc.local 파일 생성
     sudo tee /etc/rc.local > /dev/null << 'EOF'
-    #!/bin/bash
-    usermod -aG docker $SUDO_USER
-    exit 0
-    EOF
-    
+#!/bin/bash
+usermod -aG docker $SUDO_USER
+exit 0
+EOF
+
     # rc.local 실행 권한 부여
     sudo chmod +x /etc/rc.local
     
     # rc-local 서비스 설정 파일 생성
     sudo tee /etc/systemd/system/rc-local.service > /dev/null << 'EOF'
-    [Unit]
-    Description=/etc/rc.local Compatibility
-    ConditionPathExists=/etc/rc.local
-    
-    [Service]
-    Type=forking
-    ExecStart=/etc/rc.local start
-    TimeoutSec=0
-    StandardOutput=tty
-    RemainAfterExit=yes
-    SysVStartPriority=99
-    
-    [Install]
-    WantedBy=multi-user.target
-    EOF
-    
+[Unit]
+Description=/etc/rc.local Compatibility
+ConditionPathExists=/etc/rc.local
+
+[Service]
+Type=forking
+ExecStart=/etc/rc.local start
+TimeoutSec=0
+StandardOutput=tty
+RemainAfterExit=yes
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
     # rc-local 서비스 활성화 및 시작
     sudo systemctl enable rc-local
     sudo systemctl start rc-local
@@ -346,5 +346,3 @@ else
     echo "잘못된 선택입니다."
     exit 1
 fi
-
-
