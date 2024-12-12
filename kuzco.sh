@@ -216,51 +216,26 @@ elif [ "$option" == "3" ]; then
     echo -e "${GREEN}현재 Docker 버전:${NC}"
     docker --version
     
-    # 현재 사용자를 docker 그룹에 추가 (즉시 적용)
-    sudo usermod -aG docker $USER
-    newgrp docker
+    # Docker Compose 설치
+    echo -e "${BLUE}Docker Compose 최신 버전을 설치합니다...${NC}"
     
-    # Docker 그룹 영구 설정
-    echo -e "${YELLOW}Docker 그룹 설정을 영구적으로 적용합니다...${NC}"
+    # GitHub API에서 최신 버전 확인
+    LATEST_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep -oP '"tag_name": "\K(.*)(?=")')
+    echo -e "${GREEN}최신 버전: ${LATEST_VERSION}${NC}"
     
-    # rc.local 파일 생성
-    sudo tee /etc/rc.local > /dev/null << 'EOF'
-#!/bin/bash
-usermod -aG docker $SUDO_USER
-exit 0
-EOF
-
-    # rc.local 실행 권한 부여
-    sudo chmod +x /etc/rc.local
+    # Docker Compose 설치
+    mkdir -p $HOME/.docker/cli-plugins
+    curl -SL "https://github.com/docker/compose/releases/download/${LATEST_VERSION}/docker-compose-linux-x86_64" -o $HOME/.docker/cli-plugins/docker-compose
+    chmod +x $HOME/.docker/cli-plugins/docker-compose
     
-    # rc-local 서비스 설정 파일 생성
-    sudo tee /etc/systemd/system/rc-local.service > /dev/null << 'EOF'
-[Unit]
-Description=/etc/rc.local Compatibility
-ConditionPathExists=/etc/rc.local
-
-[Service]
-Type=forking
-ExecStart=/etc/rc.local start
-TimeoutSec=0
-StandardOutput=tty
-RemainAfterExit=yes
-SysVStartPriority=99
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-    # rc-local 서비스 활성화 및 시작
-    sudo systemctl enable rc-local
-    sudo systemctl start rc-local
-    
-    echo -e "${GREEN}Docker 그룹 설정이 영구적으로 적용되었습니다.${NC}"
+    # 버전 확인
+    echo -e "${GREEN}설치된 Docker Compose 버전:${NC}"
+    docker compose version
     
     # Docker 서비스 시작 및 자동 시작 설정
     sudo systemctl start docker
     sudo systemctl enable docker
-
+    
     # 현재 사용자를 docker 그룹에 추가
     if ! groups $USER | grep &>/dev/null '\bdocker\b'; then
         echo -e "${BLUE}사용자를 docker 그룹에 추가합니다...${NC}"
@@ -346,3 +321,5 @@ else
     echo "잘못된 선택입니다."
     exit 1
 fi
+
+
