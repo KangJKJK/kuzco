@@ -132,7 +132,8 @@ elif [ "$option" == "2" ]; then
         echo -e "${YELLOW}재구동하고자 하는 워커를 클릭해주세요.${NC}"
         echo -e "${YELLOW}instance탭으로 가셔서 Launch worker를 클릭하시거나 정보를 확인하세요.${NC}"
         echo -e "${YELLOW}또는 다음 명령어를 입력하여 workerID와 코드를 확인하세요: kuzco worker status${NC}"
-        echo -e "${YELLOW}workerID와 instance code가 필요합니다.${NC}"
+        echo -e "${YELLOW}예: kuzco worker start --worker abc-s2 --code abc-vbn-a 라면${NC}"
+        echo -e "${YELLOW}워커ID:abc-s2 인스턴스코드:abc-vbn-a 입니다.${NC}"
         read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
 
         # 노드 중지 및 업그레이드
