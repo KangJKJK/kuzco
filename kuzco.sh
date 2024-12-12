@@ -263,11 +263,12 @@ elif [ "$option" == "3" ]; then
         sudo apt-get update
         sudo apt-get install -y nvidia-container-toolkit nvidia-container-runtime
         sudo nvidia-ctk runtime configure --runtime=docker
-        
-        echo -e "${YELLOW}Docker 서비스를 재시작합니다. 기존 컨테이너들이 삭제됩니다.${NC}"
-        sudo systemctl restart docker
     fi
 
+    #Docker 재시작
+    echo -e "${YELLOW}Docker 서비스를 재시작합니다.${NC}"
+    sudo systemctl restart docker
+    
     # Docker 런타임 설정 확인
     echo -e "${GREEN}Docker 런타임 설정을 확인합니다...${NC}"
     docker info | grep -i runtime
@@ -291,8 +292,8 @@ elif [ "$option" == "3" ]; then
     export KUZCO_WORKER_CODE="$worker_code"
     
     # kuzco worker 실행
-    echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"          
-    docker run --rm --runtime=nvidia --gpus all -d --name kuzco-worker-$(date +%s) kuzcoxyz/worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
+    echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"         
+    docker run --restart=unless-stopped --runtime=nvidia --gpus all -d --name kuzco-worker-$(date +%s) kuzcoxyz/worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
 
 elif [ "$option" == "5" ]; then
     echo -e "${YELLOW}실행 중인 모든 Kuzco Docker 컨테이너를 확인합니다...${NC}"
