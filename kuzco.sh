@@ -237,11 +237,9 @@ elif [ "$option" == "3" ]; then
     sudo systemctl enable docker
     
     # 현재 사용자를 docker 그룹에 추가
-    if ! groups $USER | grep &>/dev/null '\bdocker\b'; then
-        echo -e "${BLUE}사용자를 docker 그룹에 추가합니다...${NC}"
-        sudo usermod -aG docker $USER
-        newgrp docker
-    fi
+    echo -e "${BLUE}사용자를 docker 그룹에 추가합니다...${NC}"
+    sudo usermod -aG docker $USER
+    newgrp docker
 
     # NVIDIA Container Toolkit 설치 여부 확인
     if nvidia-ctk --version &> /dev/null && docker info | grep -i "nvidia" &> /dev/null; then
