@@ -264,10 +264,6 @@ elif [ "$option" == "3" ]; then
         sudo apt-get install -y nvidia-container-toolkit nvidia-container-runtime
         sudo nvidia-ctk runtime configure --runtime=docker
     fi
-
-    #Docker 재시작
-    echo -e "${YELLOW}Docker 서비스를 재시작합니다.${NC}"
-    sudo systemctl restart docker
     
     # Docker 런타임 설정 확인
     echo -e "${GREEN}Docker 런타임 설정을 확인합니다...${NC}"
@@ -275,6 +271,10 @@ elif [ "$option" == "3" ]; then
 
     # Kuzco Docker 설치
     docker pull kuzcoxyz/worker:latest
+
+    #Docker 재시작
+    echo -e "${YELLOW}Docker 서비스를 재시작합니다.${NC}"
+    sudo systemctl restart docker
 
     # 이용자에게 정보 받기
     echo -e "${YELLOW}https://kuzco.xyz/ 로에서 Workers 탭으로 이동하세요.${NC}"
