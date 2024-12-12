@@ -261,7 +261,7 @@ elif [ "$option" == "3" ]; then
         sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list
 
         sudo apt-get update
-        sudo apt-get install -y nvidia-container-toolkit=1.14.3-1 nvidia-container-runtime=3.14.0-1
+        sudo apt-get install -y nvidia-container-toolkit nvidia-container-runtime
         sudo nvidia-ctk runtime configure --runtime=docker
     fi
     
