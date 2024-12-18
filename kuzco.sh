@@ -11,7 +11,7 @@ echo -e "${GREEN}1: kuzco 노드 새로 설치(CLI)${NC}"
 echo -e "${GREEN}2: kuzco 노드 업데이트 및 재실행(CLI)${NC}"
 echo -e "${GREEN}3: 방화벽 포트 자동 개방 (자산이 있는 개인지갑이 설치된 PC는 절대 실행하지 마세요)${NC}"
 echo -e "${GREEN}4: kuzco 노드 중복 설치(Docker)${NC}"
-echo -e "${GREEN}5: kuzco Docker 컨테이너 삭제${NC}"
+echo -e "${GREEN}5: kuzco Docker 컨테이너 재설치${NC}"
 echo -e "${RED}노드 구동 후 대시보드 연동까지 최소 5분~10분정도 소요됩니다. 충분히 기다리세요!${NC}"
 
 read -p "선택 (1, 2, 3, 4, 5): " option
@@ -310,6 +310,25 @@ elif [ "$option" == "5" ]; then
             echo "작업이 취소되었습니다."
         fi
     fi
+    
+    # 이용자에게 정보 받기
+    echo -e "${YELLOW}https://kuzco.xyz/ 로에서 Workers 탭으로 이동하세요.${NC}"
+    echo -e "${YELLOW}Create woker를 누르신후 docker를 선택해주세요.${NC}"
+    echo -e "${YELLOW}instance탭으로 가셔서 Launch worker를 클릭하세요.${NC}"
+    echo -e "${YELLOW}workerID와 instanceID가 필요하니 기억해두세요.${NC}"
+    read -p "위 단계를 필수적으로 진행하셔야 합니다. 진행하셨다면 엔터를 입력하세요."
+
+    # 워커 정보 입력 받기
+    read -p "워커 ID를 입력하세요: " worker_name
+    read -p "워커 Instance ID를 입력하세요: " worker_code
+    
+    # 환경변수로 설정
+    export KUZCO_WORKER_NAME="$worker_name"
+    export KUZCO_WORKER_CODE="$worker_code"
+    
+    # kuzco worker 실행
+    echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"         
+    docker run --restart=unless-stopped --runtime=nvidia --gpus all -d --name kuzco-worker-$(date +%s) kuzcoxyz/amd64-ollama-nvidia-worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
 else
     echo "잘못된 선택입니다."
     exit 1
