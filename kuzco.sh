@@ -312,8 +312,9 @@ elif [ "$option" == "4" ]; then
     export KUZCO_WORKER_CODE="$worker_code"
     
     # kuzco worker 실행
-    echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"         
-    docker run --rm --runtime=nvidia --gpus all -e CACHE_DIRECTORY=/root/models  -v ~/.kuzco/models:/root/models kuzcoxyz/amd64-ollama-nvidia-worker --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
+    echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"
+    sudo mkdir -p /home/$USER/kuzco-cache && chmod 777 /home/$USER/kuzco-cache
+    docker run --restart=unless-stopped --runtime=nvidia --gpus all -d -v /home/$USER/kuzco-cache:/models -e CACHE_DIRECTORY=/models --name kuzco-worker-$(date +%s) kuzcoxyz/amd64-ollama-nvidia-worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
 else
     echo "잘못된 선택입니다."
     exit 1
