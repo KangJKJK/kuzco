@@ -140,17 +140,9 @@ elif [ "$option" == "2" ]; then
         sudo kuzco worker stop
         kuzco upgrade
 
-        # 워커 정보 입력 받기
-        read -p "워커 이름을 입력하세요: " worker_name
-        read -p "워커 Instance ID를 입력하세요: " worker_code
-        
-        # 환경변수로 설정
-        export KUZCO_WORKER_NAME="$worker_name"
-        export KUZCO_WORKER_CODE="$worker_code"
-        
         # kuzco worker 실행
         echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"
-        sudo kuzco worker start --background --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"    
+        sudo kuzco worker restart
         
 elif [ "$option" == "3" ]; then
     echo -e "${RED}경고: 이 옵션은 서버에서만 실행해야 합니다!${NC}"
