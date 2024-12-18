@@ -9,7 +9,6 @@ NC='\033[0m' # 색상 초기화
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
 echo -e "${GREEN}1: kuzco 노드 새로 설치(CLI)${NC}"
 echo -e "${GREEN}2: kuzco 노드 업데이트 및 재실행(CLI)${NC}"
-echo -e "${GREEN}3: 방화벽 포트 자동 개방 (자산이 있는 개인지갑이 설치된 PC는 절대 실행하지 마세요)${NC}"
 echo -e "${GREEN}4: kuzco 노드 중복 설치(Docker)${NC}"
 echo -e "${GREEN}5: kuzco Docker 컨테이너 재설치${NC}"
 echo -e "${RED}노드 구동 후 대시보드 연동까지 최소 5분~10분정도 소요됩니다. 충분히 기다리세요!${NC}"
@@ -26,7 +25,7 @@ if [ "$option" == "1" ]; then
     echo -e "4: 드라이버 설치 건너뛰기"
     
     while true; do
-        read -p "선택 (1, 2, 3, 4): " driver_option
+        read -p "선택 (1, 2, 3): " driver_option
         
         case $driver_option in
             1)
@@ -143,37 +142,8 @@ elif [ "$option" == "2" ]; then
         # kuzco worker 실행
         echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"
         sudo kuzco worker restart
-        
-elif [ "$option" == "3" ]; then
-    echo -e "${RED}경고: 이 옵션은 서버에서만 실행해야 합니다!${NC}"
-    echo -e "${RED}개인 PC에서 실행 시 보안에 위험할 수 있습니다!${NC}"
-    echo -e "${RED}이용 중인 모든 포트에 대한 방화벽이 허용됩니다. 가상 서버가 아니라면 보안에 취약하므로 주의해야 합니다.${NC}"
-    read -p "정말로 계속하시겠습니까? (y/n): " confirm
-    
-    if [ "$confirm" == "y" ]; then
-        # 현재 사용 중인 포트 확인 및 허용
-        echo -e "${GREEN}현재 사용 중인 포트를 확인합니다...${NC}"
 
-        # TCP 포트 확인 및 허용
-        echo -e "${YELLOW}TCP 포트 확인 및 허용 중...${NC}"
-        sudo ss -tlpn | grep LISTEN | awk '{print $4}' | cut -d':' -f2 | while read port; do
-            echo -e "TCP 포트 ${GREEN}$port${NC} 허용"
-            sudo ufw allow $port/tcp
-        done
-
-        # UDP 포트 확인 및 허용
-        echo -e "${YELLOW}UDP 포트 확인 및 허용 중...${NC}"
-        sudo ss -ulpn | grep LISTEN | awk '{print $4}' | cut -d':' -f2 | while read port; do
-            echo -e "UDP 포트 ${GREEN}$port${NC} 허용"
-            sudo ufw allow $port/udp
-        done
-        
-        echo -e "${GREEN}포트 개방이 완료되었습니다.${NC}"
-    else
-        echo "작업이 취소되었습니다."
-    fi
-
-    elif [ "$option" == "4" ]; then
+    elif [ "$option" == "3" ]; then
     echo -e "${GREEN}Kuzco노드 중복설치를 시작합니다. CLI설치를 우선 하시고 이 옵션을 선택하세요.${NC}"
     read -p "정말로 계속하시겠습니까? (y/n): " confirm
     
@@ -288,7 +258,7 @@ elif [ "$option" == "3" ]; then
     echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"         
     docker run --restart=unless-stopped --runtime=nvidia --gpus all -d --name kuzco-worker-$(date +%s) kuzcoxyz/amd64-ollama-nvidia-worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
 
-elif [ "$option" == "5" ]; then
+elif [ "$option" == "4" ]; then
     echo -e "${YELLOW}실행 중인 모든 Kuzco Docker 컨테이너를 확인합니다...${NC}"
     
     # kuzco-worker 관련 컨테이너 목록 조회
