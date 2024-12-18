@@ -256,7 +256,7 @@ elif [ "$option" == "2" ]; then
     
     # kuzco worker 실행
     echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"         
-    docker run --restart=unless-stopped --runtime=nvidia --gpus all -d --name kuzco-worker-$(date +%s) kuzcoxyz/amd64-ollama-nvidia-worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
+    docker run --restart=unless-stopped --runtime=nvidia --gpus all -d --name kuzco-worker-$(date +%s) kuzcoxyz/amd64-ollama-nvidia-worker --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
 
 elif [ "$option" == "4" ]; then
     echo -e "${YELLOW}실행 중인 모든 Kuzco Docker 컨테이너를 확인합니다...${NC}"
@@ -313,7 +313,7 @@ elif [ "$option" == "4" ]; then
     
     # kuzco worker 실행
     echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"         
-    docker run --restart=unless-stopped --runtime=nvidia --gpus all -d --name kuzco-worker-$(date +%s) kuzcoxyz/amd64-ollama-nvidia-worker:latest --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
+    docker run --restart=unless-stopped --runtime=nvidia --gpus all -d --name kuzco-worker-$(date +%s) kuzcoxyz/amd64-ollama-nvidia-worker --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
 else
     echo "잘못된 선택입니다."
     exit 1
