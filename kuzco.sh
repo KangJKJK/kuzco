@@ -13,7 +13,7 @@ echo -e "${GREEN}4: kuzco 노드 중복 설치(Docker)${NC}"
 echo -e "${GREEN}5: kuzco Docker 컨테이너 재설치${NC}"
 echo -e "${RED}노드 구동 후 대시보드 연동까지 최소 5분~10분정도 소요됩니다. 충분히 기다리세요!${NC}"
 
-read -p "선택 (1, 2, 3, 4, 5): " option
+read -p "선택 (1, 2, 3, 4): " option
 
 if [ "$option" == "1" ]; then
     echo "kuzco 노드 새로 설치를 선택했습니다."
