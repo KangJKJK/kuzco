@@ -285,7 +285,8 @@ elif [ "$option" == "4" ]; then
     if ! groups $USER | grep &>/dev/null '\bdocker\b'; then
         echo -e "${BLUE}사용자를 docker 그룹에 추가합니다...${NC}"
         sudo usermod -aG docker $USER
-        newgrp docker
+        # 서브셸에서 newgrp 실행
+        bash -c "newgrp docker"
     fi
 
     # Kuzco Docker 설치
