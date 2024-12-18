@@ -233,7 +233,7 @@ elif [ "$option" == "2" ]; then
     docker info | grep -i runtime
 
     # Kuzco Docker 설치
-    docker pull kuzcoxyz/worker:latest
+    docker pull kuzcoxyz/amd64-ollama-nvidia-worker:latest
 
     #Docker 재시작
     echo -e "${YELLOW}Docker 서비스를 재시작합니다.${NC}"
@@ -280,7 +280,14 @@ elif [ "$option" == "4" ]; then
             echo "작업이 취소되었습니다."
         fi
     fi
-    
+
+    # Kuzco Docker 설치
+    docker pull kuzcoxyz/amd64-ollama-nvidia-worker:latest
+
+    #Docker 재시작
+    echo -e "${YELLOW}Docker 서비스를 재시작합니다.${NC}"
+    sudo systemctl restart docker
+
     # 이용자에게 정보 받기
     echo -e "${YELLOW}https://kuzco.xyz/ 로에서 Workers 탭으로 이동하세요.${NC}"
     echo -e "${YELLOW}Create woker를 누르신후 docker를 선택해주세요.${NC}"
