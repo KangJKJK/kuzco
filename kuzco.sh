@@ -7,10 +7,10 @@ NC='\033[0m' # 색상 초기화
 
 # 초기 선택 메뉴
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
-echo -e "${GREEN}1: kuzco 노드 새로 설치(CLI)${NC}"
+echo -e "${GREEN}1: kuzco 노드 설치(CLI)${NC}"
 echo -e "${GREEN}2: kuzco 노드 업데이트 및 재실행(CLI)${NC}"
-echo -e "${GREEN}4: kuzco 노드 중복 설치(Docker)${NC}"
-echo -e "${GREEN}5: kuzco Docker 컨테이너 재설치${NC}"
+echo -e "${GREEN}3: kuzco 노드 설치(Docker)${NC}"
+echo -e "${GREEN}4: kuzco 노드 재설치(Docker)${NC}"
 echo -e "${RED}노드 구동 후 대시보드 연동까지 최소 5분~10분정도 소요됩니다. 충분히 기다리세요!${NC}"
 
 read -p "선택 (1, 2, 3, 4): " option
