@@ -9,11 +9,12 @@ NC='\033[0m' # 색상 초기화
 echo -e "${YELLOW}옵션을 선택하세요:${NC}"
 echo -e "${GREEN}1: kuzco 노드 설치(CLI)${NC}"
 echo -e "${GREEN}2: kuzco 노드 업데이트 및 재실행(CLI)${NC}"
-echo -e "${GREEN}3: kuzco 노드 설치(Docker)${NC}"
-echo -e "${GREEN}4: kuzco 노드 재설치(Docker)${NC}"
+echo -e "${GREEN}3: kuzco 노드 삭제 및 재설치(CLI)${NC}"
+echo -e "${GREEN}4: kuzco 노드 설치(Docker)${NC}"
+echo -e "${GREEN}5: kuzco 노드 재설치(Docker)${NC}"
 echo -e "${RED}노드 구동 후 대시보드 연동까지 최소 5분~10분정도 소요됩니다. 충분히 기다리세요!${NC}"
 
-read -p "선택 (1, 2, 3, 4): " option
+read -p "선택 (1, 2, 3, 4, 5): " option
 
 if [ "$option" == "1" ]; then
     echo "kuzco 노드 새로 설치를 선택했습니다."
@@ -134,7 +135,33 @@ elif [ "$option" == "2" ]; then
         echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"
         sudo kuzco worker restart
 
-    elif [ "$option" == "3" ]; then
+elif ["$option" == "3" ]; then
+    echo "삭제 및 재설치를 선택하셨습니다."
+
+        # 노드 중지 및 업그레이드
+        sudo kuzco worker stop
+        sudo kuzco worker clean
+
+        export PATH=/usr/local/cuda/bin:$PATH
+        export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+        source ~/.bashrc
+        
+        # 작업공간생성 및 이동
+        sudo rm -rf kuzco
+        mkdir -p "$HOME/kuzco"
+        cd "$HOME/kuzco"
+        echo -e "${GREEN}작업 디렉토리 이동${NC}"
+    
+        # 스크립트를 파일로 저장
+        curl -sSL https://kuzco.xyz/setup-kuzco.sh > setup-kuzco.sh
+        
+        # 실행 권한 부여
+        chmod +x setup-kuzco.sh
+        
+        # 저장된 스크립트 실행
+        ./setup-kuzco.sh    
+
+    elif [ "$option" == "4" ]; then
     echo -e "${GREEN}Kuzco노드 중복설치를 시작합니다. CLI설치를 우선 하시고 이 옵션을 선택하세요.${NC}"
     read -p "정말로 계속하시겠습니까? (y/n): " confirm
     
@@ -249,7 +276,7 @@ elif [ "$option" == "2" ]; then
     echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"         
     sudo docker run -d --restart=always --runtime=nvidia --gpus all -e CACHE_DIRECTORY=/root/models -v ~/.kuzco/models:/root/models kuzcoxyz/amd64-ollama-nvidia-worker --worker "$KUZCO_WORKER_NAME" --code "$KUZCO_WORKER_CODE"
 
-elif [ "$option" == "4" ]; then
+elif [ "$option" == "5" ]; then
     echo -e "${YELLOW}실행 중인 모든 Kuzco Docker 컨테이너를 확인합니다...${NC}"
     
     # kuzco-worker 관련 컨테이너 목록 조회
