@@ -153,13 +153,13 @@ elif [ "$option" == "3" ]; then
         echo -e "${GREEN}작업 디렉토리 이동${NC}"
     
         # 스크립트를 파일로 저장
-        curl -sSL https://kuzco.xyz/setup-kuzco.sh > setup-kuzco.sh
+        curl -fsSL https://kuzco.xyz/install.sh | sh
         
         # 실행 권한 부여
-        chmod +x setup-kuzco.sh
+        chmod +x install.sh
         
         # 저장된 스크립트 실행
-        ./setup-kuzco.sh    
+        kuzco init
 
     elif [ "$option" == "4" ]; then
     echo -e "${GREEN}Kuzco노드 중복설치를 시작합니다. CLI설치를 우선 하시고 이 옵션을 선택하세요.${NC}"
