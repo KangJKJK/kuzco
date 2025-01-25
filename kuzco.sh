@@ -135,7 +135,7 @@ elif [ "$option" == "2" ]; then
         echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"
         sudo kuzco worker restart
 
-elif ["$option" == "3" ]; then
+elif [ "$option" == "3" ]; then
     echo "삭제 및 재설치를 선택하셨습니다."
 
         # 노드 중지 및 업그레이드
