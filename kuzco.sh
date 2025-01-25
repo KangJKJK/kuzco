@@ -113,14 +113,14 @@ if [ "$option" == "1" ]; then
         echo -e "${GREEN}작업 디렉토리 이동${NC}"
     
         # 스크립트를 파일로 저장
-        curl -sSL https://kuzco.xyz/setup-kuzco.sh > setup-kuzco.sh
+        curl -fsSL https://kuzco.xyz/install.sh | sh
         
         # 실행 권한 부여
-        chmod +x setup-kuzco.sh
+        chmod +x install.sh
         
         # 저장된 스크립트 실행
-        ./setup-kuzco.sh    
-
+        kuzco init
+        
 elif [ "$option" == "2" ]; then
     echo "업데이트 및 재실행을 선택하셨습니다."
 
