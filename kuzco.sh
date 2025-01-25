@@ -133,7 +133,7 @@ elif [ "$option" == "2" ]; then
 
         # kuzco worker 실행
         echo -e "${GREEN}Kuzco 워커를 시작합니다...${NC}"
-        sudo kuzco worker start
+        kuzco worker start
 
 elif [ "$option" == "3" ]; then
     echo "삭제 및 재설치를 선택하셨습니다."
