@@ -95,11 +95,6 @@ if [ "$option" == "1" ]; then
         export PATH=/usr/local/cuda/bin:$PATH
         export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
         source ~/.bashrc
-
-        echo "wsl --set-default-version 2"
-        echo "wsl --shutdown"
-        echo "wsl --update"
-        read -p "윈도우라면 파워셸을 관리자권한으로 열어서 위 명령어들을 입력하세요"
     
         # 사용자 안내
         echo -e "${YELLOW}https://kuzco.xyz/ 로 이동하시고 회원가입을 진행해주세요.${NC}"
@@ -136,7 +131,7 @@ elif [ "$option" == "2" ]; then
         kuzco worker start
 
 elif [ "$option" == "3" ]; then
-    echo "삭제 및 재설치를 선택하셨습니다."
+    echo "삭제를 선택하셨습니다."
 
         # 노드 중지 및 업그레이드
         sudo kuzco worker stop
