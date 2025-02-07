@@ -119,7 +119,7 @@ if [ "$option" == "1" ]; then
         chmod +x install.sh
         
         # 저장된 스크립트 실행
-        kuzco init
+        kuzco worker start
         
 elif [ "$option" == "2" ]; then
     echo "업데이트 및 재실행을 선택하셨습니다."
@@ -159,7 +159,7 @@ elif [ "$option" == "3" ]; then
         chmod +x install.sh
         
         # 저장된 스크립트 실행
-        kuzco init
+        kuzco worker start
 
     elif [ "$option" == "4" ]; then
     echo -e "${GREEN}Kuzco노드 중복설치를 시작합니다. CLI설치를 우선 하시고 이 옵션을 선택하세요.${NC}"
