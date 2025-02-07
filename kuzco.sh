@@ -141,6 +141,7 @@ elif [ "$option" == "3" ]; then
         # 노드 중지 및 업그레이드
         sudo kuzco worker stop
         sudo kuzco worker clean
+        pkill -f kuzco
 
         export PATH=/usr/local/cuda/bin:$PATH
         export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
