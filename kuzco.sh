@@ -111,6 +111,7 @@ if [ "$option" == "1" ]; then
         chmod +x install.sh
         
         # 저장된 스크립트 실행
+        kuzco login
         kuzco worker start
         
 elif [ "$option" == "2" ]; then
